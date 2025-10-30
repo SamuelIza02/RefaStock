@@ -22,4 +22,8 @@ public class TipoProductoService {
     public Optional<TipoProducto> obtenerTipoProductoPorId(Integer id){
         return tipoProductoRepository.findById(id);
     }
+
+    public TipoProducto guardar(TipoProducto tipoProducto){
+        return tipoProductoRepository.save(tipoProducto);
+    }
 }

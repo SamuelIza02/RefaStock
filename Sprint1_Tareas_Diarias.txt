@@ -1,0 +1,462 @@
+# SPRINT 1 - TAREAS DIARIAS POR HISTORIA DE USUARIO
+# RefaStock - Sistema de Inventario de Autopartes
+# Duración: 14 días por historia (70 días totales)
+
+================================================================================
+HU01 - INICIAR SESIÓN EN EL SISTEMA (5 puntos)
+================================================================================
+
+DÍA 1: Análisis de requisitos de autenticación
+- Revisar criterios de aceptación de HU01
+- Definir flujo de autenticación (usuario/contraseña)
+- Documentar casos de uso (login exitoso, fallido)
+- Identificar tablas necesarias (usuario, rol)
+
+DÍA 2: Diseño de base de datos para autenticación
+- Crear tabla 'rol' con campos (id_rol, nombre)
+- Crear tabla 'usuario' con campos (id_usuario, username, correo, pass_hash, activo, id_rol)
+- Definir relaciones y constraints
+- Insertar roles iniciales (Administrador, Supervisor, Empleado)
+
+DÍA 3: Configuración del proyecto backend
+- Crear proyecto Spring Boot con dependencias (JPA, MySQL, Web)
+- Configurar application.properties (conexión a BD)
+- Configurar CORS para permitir peticiones del frontend
+- Probar conexión a base de datos
+
+DÍA 4: Crear entidades JPA
+- Crear entidad Rol con anotaciones JPA
+- Crear entidad Usuario con anotaciones JPA
+- Definir relación @ManyToOne entre Usuario y Rol
+- Validar mapeo con base de datos
+
+DÍA 5: Crear repositorios
+- Crear RolRepository extends JpaRepository
+- Crear UsuarioRepository extends JpaRepository
+- Agregar método findByUsername en UsuarioRepository
+- Probar consultas básicas
+
+DÍA 6: Implementar servicio de autenticación
+- Crear AuthService con método autenticar(username, password)
+- Implementar lógica de validación de credenciales
+- Manejar casos de usuario no encontrado
+- Manejar casos de contraseña incorrecta
+
+DÍA 7: Crear controlador de autenticación
+- Crear AuthController con endpoint POST /api/auth/login
+- Recibir credenciales en RequestBody
+- Retornar usuario y token si es exitoso
+- Retornar error 401 si falla
+
+DÍA 8: Configuración del proyecto frontend
+- Crear proyecto React con Vite
+- Instalar dependencias (axios, react-router-dom, bootstrap)
+- Configurar estructura de carpetas (api, components, pages, context)
+- Importar Bootstrap en main.jsx
+
+DÍA 9: Configurar Axios y Context de autenticación
+- Crear axiosConfig.js con baseURL del backend
+- Crear AuthContext para manejo global de sesión
+- Implementar funciones login() y logout()
+- Configurar localStorage para persistir sesión
+
+DÍA 10: Crear componente de Login
+- Crear página Login.jsx con formulario
+- Agregar campos username y password
+- Implementar validación de campos requeridos
+- Aplicar estilos con Bootstrap (card, form-control)
+
+DÍA 11: Integrar login con backend
+- Conectar formulario con endpoint /api/auth/login
+- Manejar respuesta exitosa (guardar usuario y token)
+- Manejar errores (mostrar mensaje claro)
+- Implementar estado de loading
+
+DÍA 12: Crear Dashboard y rutas protegidas
+- Crear página Dashboard.jsx
+- Crear componente ProtectedRoute
+- Configurar React Router con rutas públicas y protegidas
+- Redirigir a dashboard después de login exitoso
+
+DÍA 13: Pruebas de integración
+- Probar login con usuario admin
+- Probar login con credenciales incorrectas
+- Verificar redirección según rol
+- Verificar persistencia de sesión al recargar página
+
+DÍA 14: Refinamiento y documentación
+- Ajustar mensajes de error
+- Mejorar estilos del formulario de login
+- Documentar endpoint de login
+- Preparar demo para revisión
+
+================================================================================
+HU02 - CERRAR SESIÓN (2 puntos)
+================================================================================
+
+DÍA 1: Análisis de requisitos de cierre de sesión
+- Revisar criterios de aceptación de HU02
+- Definir flujo de logout (destruir sesión, redirigir)
+- Identificar dónde colocar botón de logout
+- Documentar casos de uso
+
+DÍA 2: Diseño de componente Sidebar
+- Diseñar layout con menú lateral izquierdo
+- Definir estructura del sidebar (logo, usuario, menú, logout)
+- Crear mockup de diseño
+- Definir estilos con Bootstrap
+
+DÍA 3: Crear componente Sidebar
+- Crear Sidebar.jsx con estructura básica
+- Agregar información del usuario (username, rol)
+- Aplicar estilos (bg-dark, text-white, vh-100)
+- Hacer sidebar fijo con position: fixed
+
+DÍA 4: Agregar botón de logout al Sidebar
+- Agregar botón "Cerrar Sesión" al final del sidebar
+- Aplicar estilos (btn btn-danger w-100)
+- Posicionar botón en la parte inferior (position-absolute bottom-0)
+- Agregar ícono o emoji al botón
+
+DÍA 5: Implementar función de logout en AuthContext
+- Actualizar AuthContext con función logout()
+- Limpiar localStorage (remover user y token)
+- Actualizar estado de usuario a null
+- Documentar función
+
+DÍA 6: Conectar botón con función logout
+- Importar AuthContext en Sidebar
+- Usar useContext para acceder a logout()
+- Implementar handleLogout que llama a logout()
+- Usar useNavigate para redirigir a /login
+
+DÍA 7: Crear componente Layout
+- Crear Layout.jsx que combina Sidebar y contenido
+- Usar d-flex para layout de 2 columnas
+- Sidebar fijo de 250px a la izquierda
+- Contenido principal con marginLeft: 250px
+
+DÍA 8: Actualizar Dashboard para usar Layout
+- Reemplazar Navbar por Layout en Dashboard
+- Ajustar estilos del contenido principal
+- Verificar que sidebar se muestre correctamente
+- Probar navegación
+
+DÍA 9: Actualizar todas las páginas con Layout
+- Actualizar CrearUsuario.jsx para usar Layout
+- Actualizar CrearProducto.jsx para usar Layout
+- Actualizar RegistrarEntrada.jsx para usar Layout
+- Mantener consistencia en todas las páginas
+
+DÍA 10: Agregar estilos hover al menú
+- Crear clase .hover-bg en index.css
+- Aplicar efecto hover a links del sidebar
+- Agregar transición suave (transition: 0.3s)
+- Probar interacción
+
+DÍA 11: Pruebas de logout
+- Probar botón de logout desde diferentes páginas
+- Verificar que se limpia localStorage
+- Verificar redirección a login
+- Verificar que no se puede acceder a rutas protegidas después de logout
+
+DÍA 12: Mejorar UX del sidebar
+- Agregar iconos/emojis a opciones del menú
+- Resaltar opción activa del menú
+- Agregar separadores (hr) entre secciones
+- Mejorar espaciado y padding
+
+DÍA 13: Pruebas de integración
+- Probar flujo completo: login → navegar → logout
+- Verificar que sesión se destruye correctamente
+- Probar en diferentes navegadores
+- Verificar responsive (opcional)
+
+DÍA 14: Refinamiento y documentación
+- Ajustar estilos finales del sidebar
+- Documentar componentes Sidebar y Layout
+- Preparar demo de logout
+- Revisar accesibilidad del botón
+
+================================================================================
+HU13 - CREAR USUARIO NUEVO (5 puntos)
+================================================================================
+
+DÍA 1: Análisis de requisitos de gestión de usuarios
+- Revisar criterios de aceptación de HU13
+- Definir campos del formulario (username, correo, password, rol, activo)
+- Identificar validaciones necesarias
+- Documentar casos de uso
+
+DÍA 2: Diseño de formulario de creación de usuario
+- Diseñar mockup del formulario
+- Definir layout (card centrado)
+- Definir validaciones de frontend
+- Planificar mensajes de error y éxito
+
+DÍA 3: Crear servicio de usuarios en backend
+- Crear UsuarioService con método guardar()
+- Implementar validación de usuario/correo duplicado
+- Manejar excepciones
+- Documentar servicio
+
+DÍA 4: Crear controlador de usuarios
+- Crear UsuarioController con endpoint POST /api/usuarios
+- Recibir datos de usuario en RequestBody
+- Validar campos obligatorios
+- Retornar usuario creado o error
+
+DÍA 5: Agregar endpoints adicionales de usuarios
+- Agregar GET /api/usuarios (listar todos)
+- Agregar GET /api/usuarios/{id} (obtener por ID)
+- Agregar DELETE /api/usuarios/{id} (eliminar)
+- Probar endpoints con Postman
+
+DÍA 6: Crear página CrearUsuario en frontend
+- Crear CrearUsuario.jsx con estructura básica
+- Agregar Layout (Sidebar + contenido)
+- Crear card con título "Crear Usuario"
+- Aplicar estilos con Bootstrap
+
+DÍA 7: Implementar formulario de usuario
+- Agregar campo username (input text)
+- Agregar campo correo (input email)
+- Agregar campo password (input password, minLength 8)
+- Agregar campo rol (select con opciones)
+
+DÍA 8: Agregar campo activo y botones
+- Agregar checkbox "Usuario Activo" (checked por defecto)
+- Agregar botón "Crear Usuario" (btn btn-primary)
+- Agregar botón "Cancelar" (btn btn-secondary)
+- Implementar navegación al cancelar
+
+DÍA 9: Implementar estado del formulario
+- Crear estado formData con useState
+- Implementar handleChange para actualizar campos
+- Manejar checkbox de activo
+- Manejar select de rol correctamente
+
+DÍA 10: Conectar formulario con backend
+- Implementar handleSubmit
+- Llamar a POST /api/usuarios con axios
+- Manejar respuesta exitosa (mostrar mensaje)
+- Manejar errores (mostrar mensaje de error)
+
+DÍA 11: Implementar estados de UI
+- Agregar estado loading (deshabilitar botón mientras carga)
+- Agregar estado error (mostrar alert-danger)
+- Agregar estado success (mostrar alert-success)
+- Redirigir a dashboard después de 2 segundos
+
+DÍA 12: Validaciones de frontend
+- Validar campos requeridos (required)
+- Validar formato de correo (type="email")
+- Validar longitud mínima de password (minLength={8})
+- Mostrar mensajes de validación
+
+DÍA 13: Pruebas de creación de usuarios
+- Probar crear usuario con datos válidos
+- Probar crear usuario con username duplicado
+- Probar crear usuario con correo duplicado
+- Probar validaciones de campos
+
+DÍA 14: Refinamiento y documentación
+- Mejorar estilos del formulario
+- Agregar tooltips o ayudas
+- Documentar endpoint y componente
+- Preparar demo de creación de usuario
+
+================================================================================
+HU03 - REGISTRAR PRODUCTO NUEVO (5 puntos)
+================================================================================
+
+DÍA 1: Análisis de requisitos de gestión de productos
+- Revisar criterios de aceptación de HU03
+- Definir campos del producto (SKU, tipo, estado, vehículo compatible)
+- Identificar que SKU debe ser único y autogenerado
+- Documentar casos de uso
+
+DÍA 2: Diseño de base de datos para productos
+- Crear tabla 'tipo_producto' (id_tipo, nombre)
+- Crear tabla 'producto' (id_producto, sku, id_tipo, estado, stock_actual, stock_minimo, vehiculo_compatible)
+- Definir relación entre producto y tipo_producto
+- Insertar tipos de producto iniciales
+
+DÍA 3: Crear entidades de producto en backend
+- Crear entidad TipoProducto con anotaciones JPA
+- Crear enum EstadoProducto (Activo, Inactivo, Descontinuado)
+- Crear entidad Producto con relación @ManyToOne a TipoProducto
+- Validar mapeo con base de datos
+
+DÍA 4: Crear repositorios de producto
+- Crear TipoProductoRepository
+- Crear ProductoRepository
+- Agregar método countByTipoProducto_IdTipo
+- Probar consultas básicas
+
+DÍA 5: Implementar lógica de generación de SKU
+- Crear método generarSKU en ProductoService
+- Extraer primeras 3 letras del tipo en mayúsculas
+- Buscar último producto del mismo tipo
+- Generar SKU con formato: XXX01, XXX02, etc.
+
+DÍA 6: Crear servicio de productos
+- Crear ProductoService con método guardarProducto()
+- Llamar a generarSKU() antes de guardar
+- Implementar validaciones
+- Manejar excepciones
+
+DÍA 7: Crear controladores de producto y tipo
+- Crear TipoProductoController con GET y POST
+- Crear ProductoController con GET, POST, PUT, DELETE
+- Probar endpoints con Postman
+- Verificar generación de SKU
+
+DÍA 8: Crear página CrearProducto en frontend
+- Crear CrearProducto.jsx con Layout
+- Crear card con título "Registrar Producto"
+- Agregar mensaje informativo sobre SKU autogenerado
+- Aplicar estilos con Bootstrap
+
+DÍA 9: Implementar select de tipo de producto
+- Agregar select para tipo de producto
+- Cargar tipos desde /api/tipos-producto con useEffect
+- Agregar opción "+ Agregar nuevo tipo"
+- Manejar estado de tipos cargados
+
+DÍA 10: Implementar creación de nuevo tipo
+- Agregar input condicional para nuevo tipo
+- Mostrar input solo si se selecciona "+ Agregar nuevo tipo"
+- Verificar si tipo ya existe antes de crear
+- Crear tipo en backend si no existe
+
+DÍA 11: Agregar campos restantes del formulario
+- Agregar select de estado (Activo, Inactivo, Descontinuado)
+- Agregar input de vehículo compatible (opcional)
+- Quitar campos de stock (se manejan en HU06)
+- Implementar handleChange
+
+DÍA 12: Conectar formulario con backend
+- Implementar handleSubmit
+- Llamar a POST /api/productos con axios
+- Manejar respuesta exitosa
+- Manejar errores (SKU duplicado, etc.)
+
+DÍA 13: Pruebas de creación de productos
+- Probar crear producto con tipo existente
+- Probar crear producto con nuevo tipo
+- Verificar generación correcta de SKU (FRE01, FRE02)
+- Probar validaciones
+
+DÍA 14: Refinamiento y documentación
+- Mejorar estilos del formulario
+- Agregar mensajes de ayuda
+- Documentar lógica de generación de SKU
+- Preparar demo de creación de producto
+
+================================================================================
+HU06 - REGISTRAR ENTRADA DE PRODUCTO (5 puntos) [HISTORIA PIVOTE]
+================================================================================
+
+DÍA 1: Análisis de requisitos de movimientos
+- Revisar criterios de aceptación de HU06
+- Definir campos del movimiento (producto, cantidad, motivo, fecha)
+- Identificar que stock se actualiza automáticamente
+- Documentar casos de uso
+
+**DÍA 2: Diseño de base de datos para movimientos
+- Crear tabla 'movimiento' (id_movimiento, id_producto, tipo_movimiento, cantidad, motivo, fecha_hora, id_usuario, id_mov_origen)
+- Crear enum TipoMovimiento (Entrada, Salida)
+- Definir relaciones con producto y usuario
+- Planificar triggers
+
+DÍA 3: Crear triggers de stock
+- Crear trigger BEFORE INSERT para validar stock en salidas
+- Crear trigger AFTER INSERT para actualizar stock_actual
+- Probar triggers con inserts manuales
+- Verificar que stock se actualiza correctamente
+
+DÍA 4: Crear entidad Movimiento en backend
+- Crear enum TipoMovimiento
+- Crear entidad Movimiento con anotaciones JPA
+- Definir relaciones @ManyToOne con Producto y Usuario
+- Agregar auto-referencia para id_mov_origen
+
+DÍA 5: Crear repositorio y servicio de movimientos
+- Crear MovimientoRepository
+- Crear MovimientoService con método guardarMovimiento()
+- Establecer fecha_hora automáticamente si no viene
+- Implementar validaciones
+
+DÍA 6: Crear controlador de movimientos
+- Crear MovimientoController con POST /api/movimientos
+- Agregar GET /api/movimientos (listar todos)
+- Agregar GET /api/movimientos/{id} (obtener por ID)
+- Probar endpoints con Postman
+
+DÍA 7: Crear página RegistrarEntrada en frontend
+- Crear RegistrarEntrada.jsx con Layout
+- Crear card con título "Registrar Entrada de Producto"
+- Agregar subtítulo "Historia Pivote - HU06"
+- Aplicar estilos con Bootstrap
+
+DÍA 8: Implementar select de producto
+- Agregar select para seleccionar producto
+- Cargar productos desde /api/productos con useEffect
+- Mostrar SKU, tipo y stock actual en opciones
+- Manejar estado de productos cargados
+
+DÍA 9: Agregar campos de cantidad y motivo
+- Agregar input de cantidad (type="number", min="1")
+- Agregar textarea de motivo (placeholder con ejemplos)
+- Agregar mensaje informativo sobre actualización automática
+- Implementar handleChange
+
+DÍA 10: Implementar estado del formulario
+- Crear estado formData con producto, cantidad, motivo
+- Agregar usuario actual automáticamente
+- Establecer tipoMovimiento como "Entrada"
+- Manejar estados de loading, error y success
+
+DÍA 11: Conectar formulario con backend
+- Implementar handleSubmit
+- Llamar a POST /api/movimientos con axios
+- Manejar respuesta exitosa (mostrar mensaje)
+- Limpiar formulario después de éxito
+
+DÍA 12: Verificar actualización de stock
+- Probar registrar entrada de 50 unidades
+- Verificar en BD que stock_actual se actualizó
+- Verificar que movimiento se registró en historial
+- Probar con diferentes productos
+
+DÍA 13: Pruebas de integración completa
+- Crear producto nuevo (stock inicial = 0)
+- Registrar entrada de 100 unidades
+- Verificar stock actualizado a 100
+- Registrar otra entrada de 50 unidades
+- Verificar stock actualizado a 150
+
+DÍA 14: Refinamiento y documentación
+- Mejorar estilos del formulario
+- Agregar validaciones adicionales
+- Documentar flujo completo de entrada
+- Preparar demo final del Sprint 1
+
+================================================================================
+RESUMEN DEL SPRINT 1
+================================================================================
+
+Total de días trabajados: 70 días (14 días × 5 historias)
+Total de puntos completados: 22 puntos
+
+Entregables:
+✅ Sistema de autenticación funcional (login/logout)
+✅ Gestión de usuarios con roles
+✅ Gestión de productos con SKU autogenerado
+✅ Registro de entradas con actualización automática de stock
+✅ Base de datos con triggers funcionales
+✅ Frontend con React y Bootstrap
+✅ Backend con Spring Boot y MySQL
+
+Próximo paso: Sprint 2
