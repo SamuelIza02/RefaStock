@@ -13,18 +13,23 @@ public class AuthService {
     private UsuarioRepository usuarioRepository;
 
     public Usuario autenticar(String username, String password) {
-        // Buscar usuario por username
-        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+        try {
+            // Buscar usuario por username
+            Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
 
-        if (usuario == null) {
-            return null; // Usuario no existe
+            if (usuario == null || !usuario.isActivo()) {
+                return null; // Usuario no existe o está inactivo
+            }
+
+            // Por ahora comparación simple - en producción usar BCrypt
+            // TODO: Implementar BCrypt para hash de contraseñas
+            if (usuario.getPassHash().equals(password)) {
+                return usuario;
+            }
+
+            return null; // Contraseña incorrecta
+        } catch (Exception e) {
+            return null; // Error en autenticación
         }
-
-        // Verificar contraseña (por ahora comparación simple, luego BCrypt)
-        if (usuario.getPassHash().equals(password)) {
-            return usuario;
-        }
-
-        return null; // Contraseña incorrecta
     }
 }

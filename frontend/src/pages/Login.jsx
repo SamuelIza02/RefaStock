@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axiosConfig';
@@ -8,14 +8,18 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const timeoutRef = useRef(null);
   
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
+    
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
     try {
       const response = await api.post('/auth/login', {
@@ -27,7 +31,26 @@ const Login = () => {
       login(user, token);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data || 'Usuario o contraseña incorrectos');
+      let errorMsg = 'Usuario o contraseña incorrectos';
+      
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          try {
+            const parsed = JSON.parse(err.response.data);
+            errorMsg = parsed.error || errorMsg;
+          } catch {
+            errorMsg = err.response.data;
+          }
+        } else if (err.response.data.error) {
+          errorMsg = err.response.data.error;
+        }
+      }
+      
+      setError(errorMsg);
+      timeoutRef.current = setTimeout(() => {
+        setError('');
+        timeoutRef.current = null;
+      }, 5000);
     } finally {
       setLoading(false);
     }

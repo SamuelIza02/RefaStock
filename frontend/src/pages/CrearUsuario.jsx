@@ -41,7 +41,25 @@ const CrearUsuario = () => {
       setSuccess('Usuario creado exitosamente');
       setTimeout(() => navigate('/dashboard'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear usuario');
+      // Extraer el mensaje de error del backend
+      let errorMessage = 'Error al crear usuario';
+      
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          try {
+            const parsed = JSON.parse(err.response.data);
+            errorMessage = parsed.error || errorMessage;
+          } catch {
+            errorMessage = err.response.data;
+          }
+        } else if (err.response.data.error) {
+          errorMessage = err.response.data.error;
+        } else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

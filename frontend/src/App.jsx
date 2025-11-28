@@ -6,6 +6,9 @@ import Dashboard from './pages/Dashboard';
 import CrearUsuario from './pages/CrearUsuario';
 import CrearProducto from './pages/CrearProducto';
 import RegistrarEntrada from './pages/RegistrarEntrada';
+import RegistrarSalida from './pages/RegistrarSalida';
+import AjustarStock from './pages/AjustarStock';
+import EditarProducto from './pages/EditarProducto';
 
 function App() {
   return (
@@ -37,6 +40,24 @@ function App() {
           <Route path="/movimientos/entrada" element={
             <ProtectedRoute>
               <RegistrarEntrada />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/movimientos/salida" element={
+            <ProtectedRoute>
+              <RegistrarSalida />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/movimientos/ajustar" element={
+            <ProtectedRoute>
+              <AjustarStock />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/productos/editar" element={
+            <ProtectedRoute>
+              <EditarProducto />
             </ProtectedRoute>
           } />
           

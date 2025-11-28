@@ -24,6 +24,16 @@ public class UsuarioService {
     }
 
     public Usuario guardar(Usuario usuario){
+        // Verificar si el username ya existe
+        if (usuarioRepository.findByUsername(usuario.getUsername()).isPresent()) {
+            throw new RuntimeException("El nombre de usuario ya existe");
+        }
+        
+        // Verificar si el correo ya existe
+        if (usuarioRepository.findByCorreo(usuario.getCorreo()).isPresent()) {
+            throw new RuntimeException("El correo electrónico ya está registrado");
+        }
+        
         return usuarioRepository.save(usuario);
     }
 

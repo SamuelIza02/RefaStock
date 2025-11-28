@@ -22,20 +22,34 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        String username = credentials.get("username");
-        String password = credentials.get("password");
+        try {
+            String username = credentials.get("username");
+            String password = credentials.get("password");
 
-        Usuario usuario = authService.autenticar(username, password);
+            if (username == null || password == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Username y password son requeridos");
+                return ResponseEntity.status(400).body(errorResponse);
+            }
 
-        if (usuario != null) {
-            // Login exitoso
-            Map<String, Object> response = new HashMap<>();
-            response.put("user", usuario);
-            response.put("token", "mock-token-" + usuario.getIdUsuario()); // Token simple por ahora
-            return ResponseEntity.ok(response);
-        } else {
-            // Login fallido
-            return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
+            Usuario usuario = authService.autenticar(username, password);
+
+            if (usuario != null) {
+                // Login exitoso
+                Map<String, Object> response = new HashMap<>();
+                response.put("user", usuario);
+                response.put("token", "mock-token-" + usuario.getIdUsuario());
+                return ResponseEntity.ok(response);
+            } else {
+                // Login fallido
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Usuario o contraseña incorrectos");
+                return ResponseEntity.status(401).body(errorResponse);
+            }
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error interno del servidor");
+            return ResponseEntity.status(500).body(errorResponse);
         }
     }
 }

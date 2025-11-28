@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api/axiosConfig';
+import axios from '../api/axiosConfig';
 
 const RegistrarEntrada = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ const RegistrarEntrada = () => {
   useEffect(() => {
     const cargarProductos = async () => {
       try {
-        const response = await api.get('/productos');
+        const response = await axios.get('/productos/para-entradas');
         setProductos(response.data);
       } catch (err) {
         setError('Error al cargar productos');
@@ -56,7 +56,7 @@ const RegistrarEntrada = () => {
       // Agregar el usuario actual
       formData.usuario.idUsuario = user.idUsuario;
       
-      await api.post('/movimientos', formData);
+      await axios.post('/movimientos', formData);
       setSuccess('Entrada registrada exitosamente. Stock actualizado.');
       
       // Limpiar formulario

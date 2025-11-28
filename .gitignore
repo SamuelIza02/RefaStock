@@ -1,3 +1,4 @@
 Contexto_Proyecto_RefaStock.txt
-sprint 1.txt
+sprints/
 database/
+.env*

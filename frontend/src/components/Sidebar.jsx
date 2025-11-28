@@ -26,29 +26,69 @@ const Sidebar = () => {
         <p className="text-muted">{user?.rol?.nombre}</p>
       </div>
 
-      {/* Menú de opciones del Sprint 1 */}
+      {/* Menú de opciones según rol */}
       <div className="mb-4">
         <ul className="list-unstyled">
+          {/* Inicio - Todos los roles */}
           <li className="mb-2">
             <Link to="/dashboard" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
               Inicio
             </Link>
           </li>
-          <li className="mb-2">
-            <Link to="/usuarios/crear" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
-              Crear Usuario
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link to="/productos/crear" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
-              Crear Producto
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link to="/movimientos/entrada" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
-              Registrar Entrada
-            </Link>
-          </li>
+          
+          {/* Crear Usuario - Solo Administrador */}
+          {user?.rol?.nombre === 'Administrador' && (
+            <li className="mb-2">
+              <Link to="/usuarios/crear" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
+                Crear Usuario
+              </Link>
+            </li>
+          )}
+          
+          {/* Crear Producto - Solo Administrador */}
+          {user?.rol?.nombre === 'Administrador' && (
+            <li className="mb-2">
+              <Link to="/productos/crear" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
+                Crear Producto
+              </Link>
+            </li>
+          )}
+          
+          {/* Registrar Entrada - Solo Empleado y Supervisor */}
+          {(user?.rol?.nombre === 'Empleado' || user?.rol?.nombre === 'Supervisor') && (
+            <li className="mb-2">
+              <Link to="/movimientos/entrada" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
+                Registrar Entrada
+              </Link>
+            </li>
+          )}
+          
+          {/* Registrar Salida - Solo Empleado y Supervisor */}
+          {(user?.rol?.nombre === 'Empleado' || user?.rol?.nombre === 'Supervisor') && (
+            <li className="mb-2">
+              <Link to="/movimientos/salida" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
+                Registrar Salida
+              </Link>
+            </li>
+          )}
+          
+          {/* Ajustar Stock - Solo Supervisor */}
+          {user?.rol?.nombre === 'Supervisor' && (
+            <li className="mb-2">
+              <Link to="/movimientos/ajustar" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
+                Ajustar Stock
+              </Link>
+            </li>
+          )}
+          
+          {/* Editar Producto - Solo Administrador */}
+          {user?.rol?.nombre === 'Administrador' && (
+            <li className="mb-2">
+              <Link to="/productos/editar" className="text-black text-decoration-none d-block p-2 rounded hover-bg">
+                Editar Producto
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import api from '../api/axiosConfig';
+import axios from '../api/axiosConfig';
 
 const CrearProducto = () => {
   const [formData, setFormData] = useState({
@@ -13,45 +13,70 @@ const CrearProducto = () => {
   });
   
   const [tiposProducto, setTiposProducto] = useState([]);
-  const [mostrarNuevoTipo, setMostrarNuevoTipo] = useState(false);
+  const [productos, setProductos] = useState([]);
+  const [mostrarNuevoTipo, setMostrarNuevoTipo] = useState(true);
   const [nuevoTipo, setNuevoTipo] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [warning, setWarning] = useState('');
   
   const navigate = useNavigate();
 
-  // Cargar tipos de producto al montar el componente
+  // Cargar tipos de producto y productos al montar el componente
   useEffect(() => {
-    const cargarTipos = async () => {
+    const cargarDatos = async () => {
       try {
-        const response = await api.get('/tipos-producto');
-        setTiposProducto(response.data);
-        if (response.data.length > 0) {
-          setFormData(prev => ({
-            ...prev,
-            tipoProducto: { idTipo: response.data[0].idTipo }
-          }));
-        }
+        const [tiposResponse, productosResponse] = await Promise.all([
+          axios.get('/tipos-producto'),
+          axios.get('/productos')
+        ]);
+        
+        setTiposProducto(tiposResponse.data);
+        setProductos(productosResponse.data);
+        
+        // No preseleccionar ningún tipo, mantener en modo "nuevo tipo"
       } catch (err) {
-        setError('Error al cargar tipos de producto');
+        setError('Error al cargar datos');
       }
     };
-    cargarTipos();
+    cargarDatos();
   }, []);
+
+  const verificarProductoExistente = (idTipo) => {
+    const productosDelTipo = productos.filter(p => p.tipoProducto?.idTipo === idTipo);
+    
+    if (productosDelTipo.length > 0) {
+      const tipoNombre = tiposProducto.find(t => t.idTipo === idTipo)?.nombre;
+      const skus = productosDelTipo.map(p => p.sku).join(', ');
+      setWarning(`Ya existen ${productosDelTipo.length} producto(s) del tipo "${tipoNombre}"`);
+    } else {
+      setWarning('');
+    }
+  };
+  
+  const verificarNuevoTipo = (nombreTipo) => {
+    const tipoExistente = tiposProducto.find(
+      t => t.nombre.toLowerCase() === nombreTipo.trim().toLowerCase()
+    );
+    
+    if (tipoExistente) {
+      const productosDelTipo = productos.filter(p => p.tipoProducto?.idTipo === tipoExistente.idTipo);
+      if (productosDelTipo.length > 0) {
+        const skus = productosDelTipo.map(p => p.sku).join(', ');
+        setError(`Ya existen ${productosDelTipo.length} producto(s) del tipo "${tipoExistente.nombre}"`);
+      } else {
+        setError('');
+      }
+    } else {
+      setError('');
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    if (name === 'idTipo') {
-      if (value === 'nuevo') {
-        setMostrarNuevoTipo(true);
-        setFormData({ ...formData, tipoProducto: { idTipo: '' } });
-      } else {
-        setMostrarNuevoTipo(false);
-        setFormData({ ...formData, tipoProducto: { idTipo: parseInt(value) } });
-      }
-    } else if (name === 'stockActual' || name === 'stockMinimo') {
+    if (name === 'stockActual' || name === 'stockMinimo') {
       setFormData({ ...formData, [name]: parseInt(value) || 0 });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -65,26 +90,53 @@ const CrearProducto = () => {
     setLoading(true);
 
     try {
-      // Si se está creando un nuevo tipo
-      if (mostrarNuevoTipo && nuevoTipo.trim()) {
+      let productoData = { ...formData };
+      
+      // Crear producto con el tipo especificado
+      if (nuevoTipo.trim()) {
         // Verificar si el tipo ya existe
         const tipoExistente = tiposProducto.find(
           t => t.nombre.toLowerCase() === nuevoTipo.trim().toLowerCase()
         );
         
         if (tipoExistente) {
-          formData.tipoProducto.idTipo = tipoExistente.idTipo;
+          // Verificar si ya hay productos de este tipo
+          const productosDelTipo = productos.filter(p => p.tipoProducto?.idTipo === tipoExistente.idTipo);
+          if (productosDelTipo.length > 0) {
+            setError(`Ya existen productos del tipo "${tipoExistente.nombre}". Use un nombre diferente.`);
+            return;
+          }
+          // Si el tipo existe pero no tiene productos, usar el tipo existente
+          productoData.tipoProducto = { idTipo: tipoExistente.idTipo };
         } else {
-          const tipoResponse = await api.post('/tipos-producto', { nombre: nuevoTipo });
-          formData.tipoProducto.idTipo = tipoResponse.data.idTipo;
+          // Enviar el nombre del tipo para que el backend lo cree
+          productoData.tipoProducto = { nombre: nuevoTipo.trim() };
         }
       }
       
-      await api.post('/productos', formData);
+      // Crear el producto (el backend manejará la creación del tipo si es necesario)
+      await axios.post('/productos', productoData);
+      
       setSuccess('Producto creado exitosamente');
+      
+      // Recargar tipos de producto para actualizar la lista
+      const response = await axios.get('/tipos-producto');
+      setTiposProducto(response.data);
+      
+      // Limpiar formulario
+      setFormData({
+        tipoProducto: { idTipo: '' },
+        estado: 'Activo',
+        stockActual: 0,
+        stockMinimo: 0,
+        vehiculoCompatible: ''
+      });
+      setNuevoTipo('');
+      setMostrarNuevoTipo(false);
+      
       setTimeout(() => navigate('/dashboard'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear producto');
+      setError(err.response?.data || err.response?.data?.message || 'Error al crear producto');
     } finally {
       setLoading(false);
     }
@@ -105,36 +157,42 @@ const CrearProducto = () => {
 
                   <div className="mb-3">
                     <label className="form-label">Tipo de Producto</label>
-                    <select
-                      name="idTipo"
-                      className="form-select"
-                      value={mostrarNuevoTipo ? 'nuevo' : formData.tipoProducto.idTipo}
-                      onChange={handleChange}
-                      required={!mostrarNuevoTipo}
-                    >
-                      <option value="">Seleccione un tipo</option>
-                      {tiposProducto.map(tipo => (
-                        <option key={tipo.idTipo} value={tipo.idTipo}>
-                          {tipo.nombre}
-                        </option>
-                      ))}
-                      <option value="nuevo">+ Agregar nuevo tipo</option>
-                    </select>
+                    <div className="form-check">
+                      <input 
+                        className="form-check-input" 
+                        type="radio" 
+                        name="tipoOption" 
+                        id="nuevoTipo" 
+                        checked={mostrarNuevoTipo}
+                        onChange={() => {
+                          setMostrarNuevoTipo(true);
+                          setFormData({ ...formData, tipoProducto: { idTipo: '' } });
+                          setWarning('');
+                        }}
+                      />
+                      <label className="form-check-label" htmlFor="nuevoTipo">
+                        Agregar nuevo tipo de producto
+                      </label>
+                    </div>
                   </div>
 
-                  {mostrarNuevoTipo && (
-                    <div className="mb-3">
-                      <label className="form-label">Nombre del Nuevo Tipo</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={nuevoTipo}
-                        onChange={(e) => setNuevoTipo(e.target.value)}
-                        placeholder="Ej: Frenos, Motor, Suspensión"
-                        required
-                      />
+                  <div className="mb-3">
+                    <label className="form-label">Nombre del Tipo de Producto</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={nuevoTipo}
+                      onChange={(e) => {
+                        setNuevoTipo(e.target.value);
+                        verificarNuevoTipo(e.target.value);
+                      }}
+                      placeholder="Ej: Amortiguador, Frenos, Motor, Suspensión"
+                      required
+                    />
+                    <div className="form-text">
+                      No se permiten tipos duplicados si ya tienen productos
                     </div>
-                  )}
+                  </div>
 
                   <div className="mb-3">
                     <label className="form-label">Estado</label>
@@ -163,6 +221,7 @@ const CrearProducto = () => {
                     />
                   </div>
 
+                  {warning && <div className="alert alert-warning">{warning}</div>}
                   {error && <div className="alert alert-danger">{error}</div>}
                   {success && <div className="alert alert-success">{success}</div>}
 

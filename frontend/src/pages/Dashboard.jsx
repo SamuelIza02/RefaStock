@@ -19,39 +19,90 @@ const Dashboard = () => {
             <h3>Acceso rapido</h3>
 
             <div className="row mt-4">
-              <div className="col-md-4">
-                <div className="card text-center">
-                  <div className="card-body">
-                    <h5 >
-                      <Link to="/usuarios/crear" className="card-title text-decoration-none">
-                        Crear Usuario
-                      </Link>
-                    </h5>
+              {user?.rol?.nombre === 'Administrador' && (
+                <>
+                  <div className="col-md-4">
+                    <div className="card text-center">
+                      <div className="card-body">
+                        <h5 >
+                          <Link to="/usuarios/crear" className="card-title text-decoration-none">
+                            Crear Usuario
+                          </Link>
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="card text-center">
+                      <div className="card-body">
+                        <h5 >
+                          <Link to="/productos/crear" className="card-title text-decoration-none">
+                            Crear Producto
+                          </Link>
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              {/* Registrar Entrada - Solo Empleado y Supervisor */}
+              {(user?.rol?.nombre === 'Empleado' || user?.rol?.nombre === 'Supervisor') && (
+                <div className="col-md-4">
+                  <div className="card text-center">
+                    <div className="card-body">
+                      <h5 >
+                        <Link to="/movimientos/entrada" className="card-title text-decoration-none">
+                          Registrar Entrada
+                        </Link>
+                      </h5>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card text-center">
-                  <div className="card-body">
-                    <h5 >
-                      <Link to="/productos/crear" className="card-title text-decoration-none">
-                        Crear Producto
-                      </Link>
-                    </h5>
+              )}
+              
+              {/* Registrar Salida - Solo Empleado y Supervisor */}
+              {(user?.rol?.nombre === 'Empleado' || user?.rol?.nombre === 'Supervisor') && (
+                <div className="col-md-4">
+                  <div className="card text-center">
+                    <div className="card-body">
+                      <h5 >
+                        <Link to="/movimientos/salida" className="card-title text-decoration-none">
+                          Registrar Salida
+                        </Link>
+                      </h5>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card text-center">
-                  <div className="card-body">
-                    <h5 >
-                      <Link to="/movimientos/entrada" className="card-title text-decoration-none">
-                        Registrar Entrada
-                      </Link>
-                    </h5>
+              )}
+              
+              {/* Ajustar Stock - Solo Supervisor */}
+              {user?.rol?.nombre === 'Supervisor' && (
+                <div className="col-md-4">
+                  <div className="card text-center">
+                    <div className="card-body">
+                      <h5 >
+                        <Link to="/movimientos/ajustar" className="card-title text-decoration-none">
+                          Ajustar Stock
+                        </Link>
+                      </h5>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+              
+              {user?.rol?.nombre === 'Administrador' && (
+                <div className="col-md-4">
+                  <div className="card text-center">
+                    <div className="card-body">
+                      <h5 >
+                        <Link to="/productos/editar" className="card-title text-decoration-none">
+                          Editar Producto
+                        </Link>
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
